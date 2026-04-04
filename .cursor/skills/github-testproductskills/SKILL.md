@@ -87,7 +87,7 @@ git fetch upstream
 
 ## Preferred workflow: local git (team-friendly)
 
-1. **Work in your clone** — Use the folder from step 4 above (not someone else’s path).
+1. **Work in your clone** — Use the folder from **First-time setup** (not someone else’s machine or path).
 2. **Stay current** — `git fetch origin` (and `git fetch upstream` if using a fork), merge or rebase `main` before large edits when the team agrees.
 3. **Branch** — `git checkout -b skills/<short-topic>` or `feature/<name>` (avoid pushing straight to `main` if the team uses PR review).
 4. **Edit** — Change files under `.cursor/skills/` (and elsewhere) following repo layout and [skill naming](#skill-naming-this-repo’s-skills).
