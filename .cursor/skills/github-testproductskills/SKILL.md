@@ -2,9 +2,10 @@
 name: github-testproductskills
 description: >-
   Team workflow to clone, branch, commit, and push changes to siddarthap-png/TestProductSkills
-  using each member’s own GitHub account and local machine. Covers circulation of the skill,
-  access (collaborator vs fork), auth (GCM, gh, PAT, SSH), overlapping skills, and versioning.
-  Use for TestProductSkills, shared Cursor skills on GitHub, team PRs, or publishing .cursor/skills.
+  using each member’s own GitHub account and local machine. Mandates safeguards against
+  accidental file deletion (review, branch protection, explicit approval for removes). Covers
+  circulation, access, auth (GCM, gh, PAT, SSH), overlapping skills, and versioning. Use for
+  TestProductSkills, shared Cursor skills on GitHub, team PRs, or publishing .cursor/skills.
 ---
 
 # GitHub team workflow: `siddarthap-png/TestProductSkills`
@@ -77,6 +78,43 @@ git fetch upstream
 
 **Fork workflow:** push branch to **your fork’s** `origin`, open PR **from your fork → `siddarthap-png/TestProductSkills:main`**.
 
+**Before every commit (deletion safety):** run `git status` and `git diff --stat` (or `git diff --cached --stat` after staging). If anything appears under **deleted** or you see unexpected removals in the diff, **stop** and fix the working tree before committing—do not push accidental deletes.
+
+## No accidental file deletion
+
+Goal: **no skill or repo file disappears by mistake**—not from a bad `git add`, not from an agent “cleanup,” not from a rushed merge. Covers **human process**, **GitHub settings**, and **agent rules**.
+
+### Humans (every commit and PR)
+
+| Rule | Detail |
+|------|--------|
+| **Explicit removes only** | Delete or `git rm` a file **only** when the task clearly requires it (e.g. documented deprecation, user said “remove X”). Never delete to “tidy” unless the team agreed. |
+| **Inspect before commit** | After staging: `git diff --cached --name-status`. Any line starting with **`D`** (deleted) must be **intentional**. If not, `git restore --staged <path>` and `git restore <path>` to recover. |
+| **Prefer narrow staging** | Use `git add path/to/file` or `git add .cursor/skills/specific-folder/` instead of blind `git add -A` at repo root when unrelated files might be missing locally. |
+| **PR review** | Every change to `main` goes through a **Pull Request**. Reviewers must scan the **Files changed** tab for **red** deletions; reject or question any removal that was not discussed. |
+| **Recovery** | If a file was deleted only locally: `git restore <path>` or `git checkout HEAD -- <path>`. If already pushed: restore from a previous commit on GitHub (**History** → view file at old commit) or `git revert` the bad commit. |
+
+### GitHub repository settings (repo admin — strongly recommended)
+
+Configure on **`siddarthap-png/TestProductSkills`** → **Settings**:
+
+| Setting | Purpose |
+|---------|---------|
+| **Branch protection rules** for `main` | Require a **pull request** before merging; require **approval** from at least one reviewer (or CODEOWNERS). Optionally **dismiss stale reviews** when new commits are pushed. |
+| **Block force pushes** to `main` | Prevents history rewrite that could hide or obliterate files without a clear trail. |
+| **Restrict who can push** | Limit direct pushes to `main` to admins only (everyone else uses PRs). |
+
+Optional: add **[CODEOWNERS](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners)** for `.cursor/skills/**` so deletion/rename PRs notify owners.
+
+### Agents and automation (mandatory)
+
+- **Do not** run `git rm`, **do not** delete files or skill folders, and **do not** use the GitHub API **DELETE** on repo contents **unless the user explicitly asked to remove that specific path** (by name) and the impact was restated for confirmation.
+- **Do not** use “cleanup,” “remove duplicates,” or “consolidate” as a reason to delete without **written user confirmation** that lists the exact paths to remove.
+- Before suggesting `git commit`, remind the user to verify **`git status`** and that **no unintended deletions** are staged.
+- If a PR would delete files, **call out every deleted path** in the summary so humans can catch mistakes.
+
+**Note:** Branch protection and review reduce risk; they do not replace careful `git status` / diff review. Admins with bypass rights must follow the same rules.
+
 ## Overlapping skills: state the difference before merge or replace
 
 When a **new or updated skill** targets the **same end goal** as an existing skill under `.cursor/skills/<name>/SKILL.md` (similar description, triggers, or workflow):
@@ -88,8 +126,8 @@ When a **new or updated skill** targets the **same end goal** as an existing ski
    - **Outcomes** (deliverables, tools, repos, or MCP servers involved)
    - **Deprecation** — If one skill **supersedes** another, say so and name the folder to remove or archive; do not leave two skills with an unexplained duplicate purpose.
 3. **Choose one path**
-   - **Single skill**: Merge content into one `SKILL.md`, delete or redirect the redundant folder in the **same** change set, and explain the consolidation in the commit message.
-   - **Separate skills**: Rename or rewrite **descriptions** so each skill’s **unique** objective is obvious; avoid two files that read like the same instructions.
+   - **Single skill**: Merge content into one `SKILL.md`. **Removing** a redundant skill folder is allowed **only** under **[No accidental file deletion](#no-accidental-file-deletion)**—user must explicitly approve the paths to delete, PR must list deletions, reviewers must confirm.
+   - **Separate skills**: Prefer **rename or rewrite** descriptions so each skill’s **unique** objective is obvious; avoid two files that read like the same instructions—**avoid delete** unless explicitly approved.
 4. **Use git to compare** — Run `git diff main -- .cursor/skills/` (or diff against the prior commit for that path) so the change is reviewable as text, not only as a blob replace.
 
 Never **silently overwrite** a skill on `main` when another submission matches its purpose unless the comparison above is recorded in **git history** (commit message or PR).
@@ -147,23 +185,25 @@ Git operations must run as **the same OS user** who completed GitHub login. Curs
 
 ## Alternative: GitHub Contents API (single-file, no local clone)
 
-Use only when a local clone is impractical and the change is a **single file** (create or update).
+Use only when a local clone is impractical and the change is a **single file** (**create or update only**).
 
 - **Endpoint**: `PUT https://api.github.com/repos/siddarthap-png/TestProductSkills/contents/{path}`
 - Requires a token with **`contents: write`** for that repo (the **user** or **automation account** that owns the token must have access).
 - For updates, `GET` the file first for `sha`, then `PUT` with Base64 content per GitHub API docs.
 - `Authorization: Bearer <token>` — **never** commit tokens.
+- **Do not** use the API **DELETE** endpoint for repo files in this workflow unless the user **explicitly** requested deletion of that path and understands it is permanent on the default branch after merge.
 
 Prefer local git for multi-file changes, refactors, and team review.
 
 ## Agent checklist
 
 - [ ] Repo target is `siddarthap-png/TestProductSkills` (or the user’s **fork** of it), not a similarly named repo.
+- [ ] **No accidental deletion:** do not delete files or run `git rm` unless the user **explicitly** named paths to remove; before any commit suggestion, flag any **staged or proposed deletions** for human review (see **No accidental file deletion**).
 - [ ] Use the **user’s local clone path** they opened in Cursor—do not hardcode another teammate’s directory.
 - [ ] Confirm **push** will use **their** credentials (they have completed GCM/`gh`/SSH setup).
 - [ ] If the change **adds or alters** a skill that **overlaps** another: document differences (see **Overlapping skills**) in the commit message or PR.
 - [ ] **Versioning / history**: meaningful commit message; optional `version:` bump on material changes; prefer **branch + PR** when multiple skills change.
-- [ ] Working tree is clean enough to commit; no unrelated files staged.
+- [ ] Working tree is clean enough to commit; no unrelated files staged; **`git diff --cached --name-status`** has no surprise **`D`** rows.
 - [ ] User has **push** access or is using **fork → PR**; if not, explain what access they need from the repo owner.
 - [ ] On auth errors, follow **Connection and authentication**; do not loop failing `git push`.
 - [ ] After push, summarize branch, commit message, PR link, and where to see **history** (local `git log` or GitHub **History**).
