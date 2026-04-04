@@ -1,55 +1,81 @@
 ---
 name: github-testproductskills
 description: >-
-  Adds, updates, or edits files in the GitHub repository siddarthap-png/TestProductSkills.
-  Enforces comparing overlapping skills, documenting differences before merge, and preserving
-  git history and versioning. Use when the user mentions TestProductSkills, skill updates to
-  GitHub, merging skills, versioning, or push/clone for that repo.
+  Team workflow to clone, branch, commit, and push changes to siddarthap-png/TestProductSkills
+  using each member’s own GitHub account and local machine. Covers circulation of the skill,
+  access (collaborator vs fork), auth (GCM, gh, PAT, SSH), overlapping skills, and versioning.
+  Use for TestProductSkills, shared Cursor skills on GitHub, team PRs, or publishing .cursor/skills.
 ---
 
-# GitHub: siddarthap-png/TestProductSkills
+# GitHub team workflow: `siddarthap-png/TestProductSkills`
 
-## Repository
+This skill is written so **any teammate** can **clone on their own computer**, **authenticate with their own GitHub login**, and **create/update content** via normal Git (and optionally Cursor). Nothing here assumes a single shared PC or a shared password.
+
+## Canonical repository
 
 - **Owner / repo**: `siddarthap-png` / `TestProductSkills`
-- **HTTPS clone URL**: `https://github.com/siddarthap-png/TestProductSkills.git`
-- **SSH URL** (optional): `git@github.com:siddarthap-png/TestProductSkills.git`
+- **HTTPS**: `https://github.com/siddarthap-png/TestProductSkills.git`
+- **SSH**: `git@github.com:siddarthap-png/TestProductSkills.git`
 - **Web**: `https://github.com/siddarthap-png/TestProductSkills`
 
-Treat this as the **canonical target** whenever the user asks to add, update, or edit files in that repository (unless they explicitly point at another clone or fork).
+Use this repo when the task is to add, update, or edit **skills** (or other files) there, unless the user names another clone, fork, or repo.
 
-## Recommended clone location (this workspace)
+## Circulating this skill to the team
 
-Prefer a stable working copy under the user’s Cursor reference tree:
+Each person needs the **skill instructions** on their machine (so Cursor/agents can follow the same rules):
 
-`C:\Users\siddartha.p\Desktop\CursorProject\GitHub\TestProductSkills`
+| Approach | What to do |
+|----------|------------|
+| **Copy the skill folder** | Copy the directory `github-testproductskills/` (containing `SKILL.md`) into their project’s `.cursor/skills/` or personal `~/.cursor/skills/` (see [Cursor skills locations](https://cursor.com/docs)). |
+| **Pull from Git** | Clone or pull `TestProductSkills`; point Cursor at that workspace, or copy `.cursor/skills/github-testproductskills/SKILL.md` into their own repo’s `.cursor/skills/`. |
+| **Single source of truth** | After this file is updated on `main`, teammates should **pull** their clone or recopy `SKILL.md` so everyone runs the same version. |
 
-Use that path when cloning if the workspace is not already that repo.
+**Do not** commit **team-wide** secrets into the repo. Each developer uses **their own** tokens/keys on **their own** OS user profile.
 
-## Preferred workflow: local git
+## Access: who can push what
 
-1. **Ensure a working copy**
-   - If the current workspace **is** `TestProductSkills` (or a worktree of it), work there.
-   - Otherwise clone once (or open an existing clone), then use that folder as the workspace for edits:
-     - `git clone https://github.com/siddarthap-png/TestProductSkills.git "C:\Users\siddartha.p\Desktop\CursorProject\GitHub\TestProductSkills"`
-   - Confirm `git remote -v` shows `origin` → `siddarthap-png/TestProductSkills` (or the user's fork if they use fork workflow).
+| Situation | What each member needs |
+|-----------|-------------------------|
+| **Direct collaborator** | GitHub account added with **Write** (or **Maintain/Admin**) on `siddarthap-png/TestProductSkills`. They clone the **upstream** URL and push branches or open PRs depending on team rules. |
+| **No write access yet** | Fork the repo to **their** GitHub user, clone **their fork**, add `upstream` remote to the org repo, work on a branch, **push to their fork**, open a **PR** to `siddarthap-png/TestProductSkills`. |
+| **Read-only** | Clone and branch locally for review; cannot push until access is granted or a fork PR is used. |
 
-2. **Branch**
-   - Create or use a feature branch: `git checkout -b <short-descriptive-name>` (avoid committing directly to `main` unless the user insists).
+The agent should **never** assume credentials from another person’s machine; the **logged-in user** must be able to `git push` successfully from **their** terminal after one-time setup.
 
-3. **Edit files**
-   - Add new files or modify existing ones with normal editor/tools; match existing project layout, naming, and style.
+## First-time setup on your machine (each teammate)
 
-4. **Commit**
-   - Stage and commit with a clear message:
-     - `git add ...` then `git commit -m "..."`
-   - One logical change per commit when possible.
+1. **Install Git** — [Git for Windows](https://git-scm.com/download/win), or Xcode CLT / `git` on macOS, or distro package on Linux.
+2. **Set your commit identity** (used on every commit; should be **your** name/email):
+   - `git config --global user.name "Your Name"`
+   - `git config --global user.email "your@email"` (prefer the email tied to your GitHub account, or GitHub noreply address from profile settings).
+3. **Choose authentication** for GitHub HTTPS or SSH (see **Connection and authentication** below). Complete **one** successful `git fetch` or `git push` from a normal system terminal so credentials are stored.
+4. **Clone the repo** to a folder **you** own (examples):
+   - Windows: `C:\Users\<you>\src\TestProductSkills` or `...\Documents\GitHub\TestProductSkills`
+   - macOS/Linux: `~/src/TestProductSkills` or `~/Projects/TestProductSkills`
+   - Command:  
+     `git clone https://github.com/siddarthap-png/TestProductSkills.git <path-you-pick>`
+5. **Open that folder in Cursor** when editing skills so paths and Git context match the clone.
 
-5. **Push and integrate**
-   - `git push -u origin <branch>`
-   - Open a PR on GitHub unless the user wants a direct push to `main`.
+If you use a **fork**, clone **your** fork instead and set `upstream`:
 
-6. **Auth (see next section)** — set this up **before** relying on automated or agent-driven pushes.
+```bash
+git clone https://github.com/<your-username>/TestProductSkills.git
+cd TestProductSkills
+git remote add upstream https://github.com/siddarthap-png/TestProductSkills.git
+git fetch upstream
+```
+
+## Preferred workflow: local git (team-friendly)
+
+1. **Work in your clone** — Use the folder from step 4 above (not someone else’s path).
+2. **Stay current** — `git fetch origin` (and `git fetch upstream` if using a fork), merge or rebase `main` before large edits when the team agrees.
+3. **Branch** — `git checkout -b skills/<short-topic>` or `feature/<name>` (avoid pushing straight to `main` if the team uses PR review).
+4. **Edit** — Change files under `.cursor/skills/` (and elsewhere) following repo layout and [skill naming](#skill-naming-this-repo’s-skills).
+5. **Commit** — `git add` / `git commit -m "..."` with a clear message (see **Versioning and history**).
+6. **Push** — `git push -u origin <branch>` (origin = your fork or the org repo, depending on setup).
+7. **Integrate** — Open a **Pull Request** on GitHub for review and merge to `main` when required.
+
+**Fork workflow:** push branch to **your fork’s** `origin`, open PR **from your fork → `siddarthap-png/TestProductSkills:main`**.
 
 ## Overlapping skills: state the difference before merge or replace
 
@@ -89,65 +115,59 @@ Git is the **source of truth** for skill history. Keep it **inspectable** and **
 
 **Do not** use the GitHub Contents API to **replace** a skill file in production without a corresponding **git-style** record of what differed (prefer clone → commit → push so history is linear and searchable). API is still acceptable for one-off automation if the user accepts weaker audit trail.
 
-## Connection and authentication (Windows / Cursor)
+## Connection and authentication (your login, your machine)
 
-Cursor’s integrated terminal and some automation contexts are **non-interactive**. Git may fail with messages like:
+Git operations must run as **the same OS user** who completed GitHub login. Cursor’s integrated terminal can be **non-interactive**; you may see:
 
 - `fatal: could not read Username for 'https://github.com': No such file or directory`
-- `error: failed to execute prompt script` / `/dev/tty: No such file or device` (credential helper cannot show a prompt)
+- `error: failed to execute prompt script` / `/dev/tty: No such file or device`
 
 **Fix in order of reliability:**
 
-1. **Git Credential Manager (GCM)** — included with [Git for Windows](https://git-scm.com/download/win). Ensure it is active:
-   - `git config --global credential.helper manager`
-   - Perform **one** successful `git push` or `git fetch` from **Windows Terminal** or **Command Prompt** (outside Cursor) so GCM can open a browser or dialog and store credentials.
+1. **Git Credential Manager (GCM)** — Bundled with **Git for Windows**. Ensure:
+   - `git config --global credential.helper manager` (on Windows; on macOS/Linux use platform-recommended helper or `gh` below).
+   - Run **one** successful `git push` or `git fetch` from **outside** Cursor (system Terminal / PowerShell / cmd) so a browser or dialog can store **your** GitHub credentials.
 
-2. **GitHub CLI** (`gh`)
-   - **Install** (Windows): `winget install --id GitHub.cli -e --source winget` — or download from [cli.github.com](https://cli.github.com/).
-   - If PowerShell says `gh` is not recognized, **close and reopen the terminal** (or sign out/in) so `Path` picks up `C:\Program Files\GitHub CLI\`. You can also run: `& "C:\Program Files\GitHub CLI\gh.exe" version`
-   - **Authenticate and wire Git:** run **`gh auth login`** first, then **`gh auth setup-git`** (not `gh setup-git` — the `auth` part is required).
-   - After that, HTTPS Git operations use the CLI-backed credential flow.
+2. **GitHub CLI** (`gh`) — Works on [Windows, macOS, Linux](https://cli.github.com/).
+   - Windows: `winget install --id GitHub.cli -e --source winget`
+   - After install, **`gh auth login`** then **`gh auth setup-git`** (not `gh setup-git`).
+   - If `gh` is not found, restart the terminal or use the full path (Windows: `C:\Program Files\GitHub CLI\gh.exe`).
 
-3. **Personal access token (HTTPS)**
-   - GitHub → Settings → Developer settings → PAT (classic) with **`repo`** scope, or fine-grained token with **Contents** read/write on `TestProductSkills`.
-   - When Git asks for a password over HTTPS, paste the **token**, not the GitHub account password.
+3. **Personal access token (HTTPS)** — GitHub → **Settings → Developer settings** → PAT (classic) with **`repo`**, or a **fine-grained** token with **Contents** read/write on `TestProductSkills`. When Git prompts for a password over HTTPS, paste the **token**, not your GitHub password.
 
-4. **Non-interactive / agent runs**
-   - Do **not** assume an interactive prompt is available.
-   - Options: pre-authenticate using steps 1–3, or set environment variable **`GH_TOKEN`** or **`GITHUB_TOKEN`** (with `repo` access) for tools that honor it; for Git itself, GCM-stored credentials are still preferred after a one-time login outside Cursor.
+4. **SSH** — Generate a key on **your** machine, add the **public** key to **your** GitHub account, then:
+   - `ssh -T git@github.com` (should greet **you** by username).
+   - `git remote set-url origin git@github.com:siddarthap-png/TestProductSkills.git` (or your fork URL).
 
-5. **SSH**
-   - Verify: `ssh -T git@github.com` (should greet you by username).
-   - If `git push` **hangs**, common causes: missing `ssh-agent` / key not loaded, corporate proxy, or first-time host key prompt in a context that cannot display it. Run `ssh -T` once in an interactive terminal to accept `github.com` if needed.
-   - Remote: `git remote set-url origin git@github.com:siddarthap-png/TestProductSkills.git`
+5. **Non-interactive / agent runs** — Do not assume prompts work. Prefer GCM/`gh` already logged in; optional **`GH_TOKEN`** / **`GITHUB_TOKEN`** only for tools that support it—**never** commit tokens to the repo.
 
-6. **If push still fails**
-   - Tell the user exactly which error appeared; suggest completing authentication in **Windows Terminal** with the same repo, then retry in Cursor.
+6. **If push still fails** — Report the exact error; complete auth in a **system** terminal with the same repo, then retry in Cursor.
 
-**Default recommendation:** Use **HTTPS + GCM** (or **HTTPS + `gh auth setup-git`**) unless the user already standardized on SSH.
+**Default:** **HTTPS + GCM** (Windows) or **HTTPS + `gh auth setup-git`**, unless the team standardizes on SSH.
 
 ## Alternative: GitHub Contents API (single-file, no local clone)
 
 Use only when a local clone is impractical and the change is a **single file** (create or update).
 
-- **Create / update file**: `PUT https://api.github.com/repos/siddarthap-png/TestProductSkills/contents/{path}`
-- Requires a token with `contents: write` (fine-grained: Contents read and write on that repo).
-- For updates, first `GET` the same path to obtain the file `sha`, then include that `sha` in the PUT body.
-- Base64-encode file content per GitHub API docs.
-- Supply the token via `Authorization: Bearer <token>` header (never commit tokens).
+- **Endpoint**: `PUT https://api.github.com/repos/siddarthap-png/TestProductSkills/contents/{path}`
+- Requires a token with **`contents: write`** for that repo (the **user** or **automation account** that owns the token must have access).
+- For updates, `GET` the file first for `sha`, then `PUT` with Base64 content per GitHub API docs.
+- `Authorization: Bearer <token>` — **never** commit tokens.
 
-Prefer local git for multi-file changes, refactors, and anything that needs tests or formatting.
+Prefer local git for multi-file changes, refactors, and team review.
 
 ## Agent checklist
 
-- [ ] Target is explicitly `siddarthap-png/TestProductSkills` (not a similarly named repo).
-- [ ] If the change **adds or alters** a skill that **overlaps** another skill’s purpose: **difference / consolidation** is documented (see **Overlapping skills**) in the commit message or PR before merge.
-- [ ] **Versioning / history**: meaningful commit message; bump optional `version:` in `SKILL.md` when behavior or scope changes materially; prefer **branch + PR** to `main` over silent direct edits when multiple skills are touched.
+- [ ] Repo target is `siddarthap-png/TestProductSkills` (or the user’s **fork** of it), not a similarly named repo.
+- [ ] Use the **user’s local clone path** they opened in Cursor—do not hardcode another teammate’s directory.
+- [ ] Confirm **push** will use **their** credentials (they have completed GCM/`gh`/SSH setup).
+- [ ] If the change **adds or alters** a skill that **overlaps** another: document differences (see **Overlapping skills**) in the commit message or PR.
+- [ ] **Versioning / history**: meaningful commit message; optional `version:` bump on material changes; prefer **branch + PR** when multiple skills change.
 - [ ] Working tree is clean enough to commit; no unrelated files staged.
-- [ ] User has push access (or fork + PR if they use forks).
-- [ ] If a **connection** or **authentication** error occurs, follow **Connection and authentication** above; do not loop on failing `git push` without fixing credentials.
-- [ ] After push, summarize branch name, commit message, PR link if created, and **how to view history** (`git log` path or GitHub **History** on the file).
+- [ ] User has **push** access or is using **fork → PR**; if not, explain what access they need from the repo owner.
+- [ ] On auth errors, follow **Connection and authentication**; do not loop failing `git push`.
+- [ ] After push, summarize branch, commit message, PR link, and where to see **history** (local `git log` or GitHub **History**).
 
 ## Skill naming (this repo’s skills)
 
-Workspace convention: **folder name = frontmatter `name`**, kebab-case, short and specific (e.g. `github-testproductskills`, `jira-sheet-sync`). One skill per folder; entry file is always **`SKILL.md`**. See project rule **cursor-ai-reference-root** for the full schema.
+Workspace convention: **folder name = frontmatter `name`**, kebab-case, short and specific (e.g. `github-testproductskills`, `jira-sheet-sync`). One skill per folder; entry file is always **`SKILL.md`**. If the consuming project has a rule file (e.g. **cursor-ai-reference-root**), follow that schema for new skills.
