@@ -1,11 +1,9 @@
 ---
 name: github-testproductskills
 description: >-
-  Team workflow to clone, branch, commit, and push changes to siddarthap-png/TestProductSkills
-  using each member’s own GitHub account and local machine. Mandates safeguards against
-  accidental file deletion (review, branch protection, explicit approval for removes). Covers
-  circulation, access, auth (GCM, gh, PAT, SSH), overlapping skills, and versioning. Use for
-  TestProductSkills, shared Cursor skills on GitHub, team PRs, or publishing .cursor/skills.
+  Team workflow for siddarthap-png/TestProductSkills: clone, auth, PRs, README updates for new
+  paths, commit messages with repo-purpose tag, anti-delete safeguards, overlapping skills, and
+  versioning. Use for TestProductSkills, publishing .cursor/skills, or GitHub skill repo hygiene.
 ---
 
 # GitHub team workflow: `siddarthap-png/TestProductSkills`
@@ -20,6 +18,27 @@ This skill is written so **any teammate** can **clone on their own computer**, *
 - **Web**: `https://github.com/siddarthap-png/TestProductSkills`
 
 Use this repo when the task is to add, update, or edit **skills** (or other files) there, unless the user names another clone, fork, or repo.
+
+### Canonical repository purpose (reuse in commits)
+
+Use this **exact short line** whenever you append the repo purpose to a commit (see **Commit messages** below):
+
+**`TestProductSkills — shared Cursor agent skills for product & engineering`**
+
+(Optional longer context for PR bodies only: skills for GitHub repo workflow, JIRA↔Excel MCP sync, GA4 events from Figma / Redbus taxonomy, etc.)
+
+## README.md (required when adding new paths)
+
+The repo root **`README.md`** is the **map** for humans browsing on GitHub. Keep it **accurate** and **short**.
+
+| Rule | Detail |
+|------|--------|
+| **New folder or top-level file** | Whenever you add a **new** directory under the repo (e.g. a new `.cursor/skills/<new-skill>/`, or a new top-level folder like `docs/`), **update `README.md` in the same commit** (or the same PR). |
+| **One line per entry** | Add a **single concise row** to the layout table (or bullet list): **path** + **what it is for** (one line, no essays). |
+| **Skills** | Each `.cursor/skills/<name>/` gets one row describing **trigger / audience** (match the skill’s `description` frontmatter, shortened). |
+| **No stale rows** | If a path is removed with explicit approval, remove or mark deprecated in README in that same change set. |
+
+Suggested **`README.md` shape:** one short intro paragraph, then a **Repository layout** table (`Path` | `Description`), then a **Contributing** line pointing at this skill for Git + safety rules.
 
 ## Circulating this skill to the team
 
@@ -72,9 +91,10 @@ git fetch upstream
 2. **Stay current** — `git fetch origin` (and `git fetch upstream` if using a fork), merge or rebase `main` before large edits when the team agrees.
 3. **Branch** — `git checkout -b skills/<short-topic>` or `feature/<name>` (avoid pushing straight to `main` if the team uses PR review).
 4. **Edit** — Change files under `.cursor/skills/` (and elsewhere) following repo layout and [skill naming](#skill-naming-this-repo’s-skills).
-5. **Commit** — `git add` / `git commit -m "..."` with a clear message (see **Versioning and history**).
-6. **Push** — `git push -u origin <branch>` (origin = your fork or the org repo, depending on setup).
-7. **Integrate** — Open a **Pull Request** on GitHub for review and merge to `main` when required.
+5. **README** — If you created a **new** folder or meaningful top-level path, **edit `README.md`** per **[README.md (required when adding new paths)](#readmemd-required-when-adding-new-paths)** before committing.
+6. **Commit** — `git add` / `git commit` with a message that follows **[Commit messages (repo purpose)](#commit-messages-repo-purpose)** and **Versioning and history**.
+7. **Push** — `git push -u origin <branch>` (origin = your fork or the org repo, depending on setup).
+8. **Integrate** — Open a **Pull Request** on GitHub for review and merge to `main` when required.
 
 **Fork workflow:** push branch to **your fork’s** `origin`, open PR **from your fork → `siddarthap-png/TestProductSkills:main`**.
 
@@ -132,6 +152,25 @@ When a **new or updated skill** targets the **same end goal** as an existing ski
 
 Never **silently overwrite** a skill on `main` when another submission matches its purpose unless the comparison above is recorded in **git history** (commit message or PR).
 
+## Commit messages (repo purpose)
+
+Every commit that touches this repository should make the **repository’s purpose** obvious in GitHub’s history (for people who work across many repos).
+
+**Append** the canonical purpose line to the commit as follows (pick one style; be consistent as a team):
+
+1. **Subject suffix (preferred when it fits ~72 characters total)**  
+   - Format: `<type>(<scope>): <short change> | TestProductSkills — shared Cursor agent skills for product & engineering`  
+   - Example: `skills(ga-events-from-figma): add Peru DNI examples | TestProductSkills — shared Cursor agent skills for product & engineering`
+
+2. **Subject + body (when the subject would be too long)**  
+   - **Subject:** `<type>(<scope>): <short change>`  
+   - **Body:** final non-empty line must be exactly:  
+     `TestProductSkills — shared Cursor agent skills for product & engineering`
+
+**Types** (examples): `skills`, `docs`, `chore` — scope is often the skill folder name or `readme`.
+
+**Agents:** When proposing a commit message, **always** include the purpose line (suffix or body footer) and **mention if `README.md` was updated** when new paths were added.
+
 ## Versioning and history (required before merging or publishing)
 
 Git is the **source of truth** for skill history. Keep it **inspectable** and **ordered**.
@@ -139,8 +178,9 @@ Git is the **source of truth** for skill history. Keep it **inspectable** and **
 | Practice | Why |
 |----------|-----|
 | **One logical commit per skill change** when possible | `git log --follow -- .cursor/skills/<name>/SKILL.md` stays readable. |
-| **Conventional, specific commit subjects** | e.g. `skills(jira-sheet-sync): clarify MCP apply step` — not `update skill`. |
-| **Body in commit message** for substantive edits | What changed, why, and if overlap was resolved (see previous section). |
+| **Conventional, specific commit subjects** | e.g. `skills(jira-sheet-sync): clarify MCP apply step | TestProductSkills — …` — not `update skill`. |
+| **Body in commit message** for substantive edits | What changed, why, overlap resolution; **end** with repo purpose line if not in subject (see **Commit messages (repo purpose)**). |
+| **README in sync** | New paths documented in `README.md` in the same PR/commit when possible. |
 | **Branches + PRs to `main`** | GitHub PR thread + merge commit preserve **review history** and intent. |
 | **Optional frontmatter `version:`** | e.g. SemVer `1.0.0` on `SKILL.md`; bump **minor** for added behavior, **patch** for clarifications, **major** for breaking workflow changes. Increment in the same commit as the content change. |
 | **Optional repo `CHANGELOG.md`** | For releases across many skills; newest entry first, link to paths under `.cursor/skills/`. |
@@ -202,7 +242,9 @@ Prefer local git for multi-file changes, refactors, and team review.
 - [ ] Use the **user’s local clone path** they opened in Cursor—do not hardcode another teammate’s directory.
 - [ ] Confirm **push** will use **their** credentials (they have completed GCM/`gh`/SSH setup).
 - [ ] If the change **adds or alters** a skill that **overlaps** another: document differences (see **Overlapping skills**) in the commit message or PR.
-- [ ] **Versioning / history**: meaningful commit message; optional `version:` bump on material changes; prefer **branch + PR** when multiple skills change.
+- [ ] **README:** if any **new** folder or top-level path was added, **`README.md`** lists it with a **short** description in the same change set.
+- [ ] **Commit message** includes the **TestProductSkills** purpose line (suffix or body footer) per **Commit messages (repo purpose)**.
+- [ ] **Versioning / history**: meaningful commit subject/body; optional `version:` bump on material changes; prefer **branch + PR** when multiple skills change.
 - [ ] Working tree is clean enough to commit; no unrelated files staged; **`git diff --cached --name-status`** has no surprise **`D`** rows.
 - [ ] User has **push** access or is using **fork → PR**; if not, explain what access they need from the repo owner.
 - [ ] On auth errors, follow **Connection and authentication**; do not loop failing `git push`.
