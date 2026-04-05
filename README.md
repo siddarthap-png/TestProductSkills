@@ -11,6 +11,8 @@ This repo holds versioned [Cursor](https://cursor.com) **Agent Skills** under `.
 | `.cursor/skills/github-testproductskills/` | Git workflow for *this* repo: clone, auth, PRs, **README** updates for new paths, **commit message** repo-purpose line, safeguards against accidental deletes. |
 | `.cursor/skills/jira-sheet-sync/` | Jira **Story** creation from Excel (`JIRA.xlsx`) via Jira MCP, REDRAIL acceptance criteria, `updates.json`, apply step. |
 | `.cursor/skills/ga-events-from-figma/` | GA4 event payloads from Figma/UI specs using Redbus **`ep.`** / **`epn.`** taxonomy (load vs click, home/SRP/SL/cust info, Peru DNI addendum). |
+| `.cursor/skills/redbus-design-language/` | Evidence-based redbus.in / redRail design-language audits (tokens, layout, Stitch); **mWeb default** unless user asks for app/desktop. |
+| `.cursor/skills/prd-stitch-ux/` | PRD-driven UX in Google Stitch: collect PRD link or paste, derive flows/screens, run Stitch MCP with traceability to requirements. |
 
 ## Contributing
 
