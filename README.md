@@ -13,6 +13,7 @@ This repo holds versioned [Cursor](https://cursor.com) **Agent Skills** under `.
 | `.cursor/skills/ga-events-from-figma/` | GA4 event payloads from Figma/UI specs using Redbus **`ep.`** / **`epn.`** taxonomy (load vs click, home/SRP/SL/cust info, Peru DNI addendum). |
 | `.cursor/skills/redbus-design-language/` | Evidence-based redbus.in / redRail design-language audits (tokens, layout, Stitch); **mWeb default** unless user asks for app/desktop. |
 | `.cursor/skills/prd-stitch-ux/` | PRD-driven UX in Google Stitch: collect PRD link or paste, derive flows/screens, run Stitch MCP with traceability to requirements. |
+| `.cursor/skills/write-product-requirements/` | PRD authoring: purpose/audience gate, Markdown template, **deliver `.docx`** (pandoc or bundled `scripts/md_to_docx.py` + `python-docx`). |
 
 ## Contributing
 
